@@ -1,5 +1,5 @@
 using CskMasala.Retail.Application.Commands;
-using CskMasala.Retail.Application.Queries;
+using CskMasala.Retail.Application.Services;
 using CskMasala.Retail.Contracts;
 using CskMasala.Shared.Auth;
 using CskMasala.Shared.Constants;
@@ -11,7 +11,7 @@ namespace CskMasala.Retail.Api.Controllers;
 /// <summary>Order management</summary>
 [ApiController]
 [Route("api/orders")]
-public class OrdersController(IMediator mediator, IExecutionContext ctx) : ControllerBase
+public class OrdersController(IMediator mediator, IOrderService orderService, IExecutionContext ctx) : ControllerBase
 {
     /// <summary>Place a new order</summary>
     [HttpPost]
@@ -35,7 +35,7 @@ public class OrdersController(IMediator mediator, IExecutionContext ctx) : Contr
     public async Task<IActionResult> GetOrders(CancellationToken ct)
     {
         if (!ctx.IsAuthenticated) return Unauthorized();
-        return Ok(await mediator.Send(new GetOrdersQuery(ctx.UserId), ct));
+        return Ok(await orderService.GetOrdersAsync(ctx.UserId, ct));
     }
 
     /// <summary>Get a specific order</summary>
@@ -43,7 +43,7 @@ public class OrdersController(IMediator mediator, IExecutionContext ctx) : Contr
     public async Task<IActionResult> GetOrder(Guid id, CancellationToken ct)
     {
         if (!ctx.IsAuthenticated) return Unauthorized();
-        var result = await mediator.Send(new GetOrderByIdQuery(id, ctx.UserId), ct);
+        var result = await orderService.GetOrderByIdAsync(id, ctx.UserId, ct);
         return result is null ? NotFound() : Ok(result);
     }
 
@@ -52,7 +52,7 @@ public class OrdersController(IMediator mediator, IExecutionContext ctx) : Contr
     public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateOrderStatusRequest request, CancellationToken ct)
     {
         if (ctx.Role != UserRole.Admin) return Forbid();
-        await mediator.Send(new UpdateOrderStatusCommand(id, request.Status), ct);
+        await orderService.UpdateOrderStatusAsync(id, request.Status, ct);
         return NoContent();
     }
 }

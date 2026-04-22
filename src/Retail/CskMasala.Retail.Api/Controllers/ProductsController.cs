@@ -1,9 +1,7 @@
-using CskMasala.Retail.Application.Commands;
-using CskMasala.Retail.Application.Queries;
+using CskMasala.Retail.Application.Services;
 using CskMasala.Retail.Contracts;
 using CskMasala.Shared.Auth;
 using CskMasala.Shared.Constants;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CskMasala.Retail.Api.Controllers;
@@ -11,18 +9,18 @@ namespace CskMasala.Retail.Api.Controllers;
 /// <summary>Product and category management</summary>
 [ApiController]
 [Route("api")]
-public class ProductsController(IMediator mediator, IExecutionContext ctx) : ControllerBase
+public class ProductsController(IProductService productService, IExecutionContext ctx) : ControllerBase
 {
     /// <summary>Get all products, optionally filtered by category</summary>
     [HttpGet("products")]
     public async Task<IActionResult> GetProducts([FromQuery] Guid? categoryId, CancellationToken ct) =>
-        Ok(await mediator.Send(new GetProductsQuery(categoryId), ct));
+        Ok(await productService.GetProductsAsync(categoryId, ct));
 
     /// <summary>Get a product by ID</summary>
     [HttpGet("products/{id:guid}")]
     public async Task<IActionResult> GetProduct(Guid id, CancellationToken ct)
     {
-        var result = await mediator.Send(new GetProductByIdQuery(id), ct);
+        var result = await productService.GetProductByIdAsync(id, ct);
         return result is null ? NotFound() : Ok(result);
     }
 
@@ -31,9 +29,8 @@ public class ProductsController(IMediator mediator, IExecutionContext ctx) : Con
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken ct)
     {
         if (ctx.Role != UserRole.Admin) return Forbid();
-        var cmd = new CreateProductCommand(request.Name, request.Description, request.Price, request.Stock,
-            request.CategoryId, request.ImageUrls, request.WeightGrams);
-        var result = await mediator.Send(cmd, ct);
+        var result = await productService.CreateProductAsync(request.Name, request.Description, request.Price,
+            request.Stock, request.CategoryId, request.ImageUrls, request.WeightGrams, ct);
         return CreatedAtAction(nameof(GetProduct), new { id = result.Id }, result);
     }
 
@@ -42,9 +39,9 @@ public class ProductsController(IMediator mediator, IExecutionContext ctx) : Con
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequest request, CancellationToken ct)
     {
         if (ctx.Role != UserRole.Admin) return Forbid();
-        var cmd = new UpdateProductCommand(id, request.Name, request.Description, request.Price,
-            request.Stock, request.CategoryId, request.ImageUrls, request.WeightGrams, request.IsActive);
-        return Ok(await mediator.Send(cmd, ct));
+        var result = await productService.UpdateProductAsync(id, request.Name, request.Description, request.Price,
+            request.Stock, request.CategoryId, request.ImageUrls, request.WeightGrams, request.IsActive, ct);
+        return Ok(result);
     }
 
     /// <summary>Delete a product (Admin only)</summary>
@@ -52,21 +49,21 @@ public class ProductsController(IMediator mediator, IExecutionContext ctx) : Con
     public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken ct)
     {
         if (ctx.Role != UserRole.Admin) return Forbid();
-        await mediator.Send(new DeleteProductCommand(id), ct);
+        await productService.DeleteProductAsync(id, ct);
         return NoContent();
     }
 
     /// <summary>Get all categories</summary>
     [HttpGet("categories")]
     public async Task<IActionResult> GetCategories(CancellationToken ct) =>
-        Ok(await mediator.Send(new GetCategoriesQuery(), ct));
+        Ok(await productService.GetCategoriesAsync(ct));
 
     /// <summary>Create a new category (Admin only)</summary>
     [HttpPost("categories")]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request, CancellationToken ct)
     {
         if (ctx.Role != UserRole.Admin) return Forbid();
-        var result = await mediator.Send(new CreateCategoryCommand(request.Name, request.Description, request.ImageUrl), ct);
+        var result = await productService.CreateCategoryAsync(request.Name, request.Description, request.ImageUrl, ct);
         return Ok(result);
     }
 }

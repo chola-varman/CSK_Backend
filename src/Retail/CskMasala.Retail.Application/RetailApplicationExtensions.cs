@@ -12,8 +12,13 @@ public static class RetailApplicationExtensions
     public static IServiceCollection AddRetailApplication(this IServiceCollection services)
     {
         services.AddScoped<IRetailService, RetailService>();
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommandHandler).Assembly));
-        services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator).Assembly);
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ICouponService, CouponService>();
+        services.AddScoped<IOrderService, OrderService>();
+
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(PlaceOrderCommandHandler).Assembly));
+        services.AddValidatorsFromAssembly(typeof(PlaceOrderCommandValidator).Assembly);
+
         return services;
     }
 }

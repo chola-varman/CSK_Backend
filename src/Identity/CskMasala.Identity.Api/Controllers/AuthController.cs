@@ -1,7 +1,5 @@
-using CskMasala.Identity.Application.Commands;
-using CskMasala.Identity.Application.Queries;
+using CskMasala.Identity.Application.Services;
 using CskMasala.Shared.Auth;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CskMasala.Identity.Api.Controllers;
@@ -9,13 +7,13 @@ namespace CskMasala.Identity.Api.Controllers;
 /// <summary>Authentication and user profile management</summary>
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IMediator mediator, IExecutionContext ctx) : ControllerBase
+public class AuthController(IUserService userService, IExecutionContext ctx) : ControllerBase
 {
     /// <summary>Register a new user using a Firebase ID token</summary>
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken ct)
     {
-        var result = await mediator.Send(new RegisterUserCommand(request.FirebaseIdToken, request.FullName), ct);
+        var result = await userService.RegisterAsync(request.FirebaseIdToken, request.FullName, ct);
         return Ok(result);
     }
 
@@ -24,7 +22,7 @@ public class AuthController(IMediator mediator, IExecutionContext ctx) : Control
     public async Task<IActionResult> GetProfile(CancellationToken ct)
     {
         if (!ctx.IsAuthenticated) return Unauthorized();
-        var result = await mediator.Send(new GetUserProfileQuery(ctx.UserId), ct);
+        var result = await userService.GetProfileAsync(ctx.UserId, ct);
         return result is null ? NotFound() : Ok(result);
     }
 
@@ -33,17 +31,10 @@ public class AuthController(IMediator mediator, IExecutionContext ctx) : Control
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request, CancellationToken ct)
     {
         if (!ctx.IsAuthenticated) return Unauthorized();
-        var cmd = new UpdateProfileCommand(
-            ctx.UserId,
-            request.FullName,
-            request.PhoneNumber,
-            request.Address is null ? null : new AddressDto(
-                request.Address.Line1,
-                request.Address.Line2,
-                request.Address.City,
-                request.Address.State,
-                request.Address.PinCode));
-        var result = await mediator.Send(cmd, ct);
+        var address = request.Address is null ? null
+            : new UserAddressInput(request.Address.Line1, request.Address.Line2,
+                request.Address.City, request.Address.State, request.Address.PinCode);
+        var result = await userService.UpdateProfileAsync(ctx.UserId, request.FullName, request.PhoneNumber, address, ct);
         return Ok(result);
     }
 }
