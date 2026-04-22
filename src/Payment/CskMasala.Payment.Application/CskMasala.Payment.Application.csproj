@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\CskMasala.Shared.csproj" />
+    <ProjectReference Include="..\..\Retail\CskMasala.Retail.Contracts\CskMasala.Retail.Contracts.csproj" />
+    <ProjectReference Include="..\CskMasala.Payment.Contracts\CskMasala.Payment.Contracts.csproj" />
+    <ProjectReference Include="..\CskMasala.Payment.Domain\CskMasala.Payment.Domain.csproj" />
+  </ItemGroup>
+</Project>

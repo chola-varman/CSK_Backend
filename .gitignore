@@ -1,0 +1,32 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+_ReSharper*/
+*.DotSettings.user
+
+## Logs
+logs/
+*.log
+
+## Secrets
+.env.local
+*.pfx
+secrets.json
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Test results
+TestResults/
+coverage/
+
+## NuGet
+*.nupkg
+.nuget/
+
+## Docker
+.dockerignore

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet --version)",
+      "Bash(dotnet --list-sdks)",
+      "Bash(dotnet sln *)",
+      "Bash(mv 'c:/Users/chola/OneDrive/MY WORK/PROJECTS/CSK MASALA/Backend/CSK_Backend/src/CskMasala.Shared/*' 'c:/Users/chola/OneDrive/MY WORK/PROJECTS/CSK MASALA/Backend/CSK_Backend/src/Shared/')",
+      "Bash(mv '__TRACKED_VAR__/CskMasala.Api/*' __TRACKED_VAR__/Api/)",
+      "Bash(xargs rm *)"
+    ]
+  }
+}
