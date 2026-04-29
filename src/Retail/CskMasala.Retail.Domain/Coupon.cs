@@ -10,7 +10,6 @@ public class Coupon : BaseEntity
     public DiscountType DiscountType { get; set; }
     public decimal DiscountValue { get; set; }
     public decimal MinOrderAmount { get; set; }
-    public int MaxUsage { get; set; }
     [ConcurrencyCheck]
     public int UsedCount { get; set; }
     public DateTime ExpiresAt { get; set; }

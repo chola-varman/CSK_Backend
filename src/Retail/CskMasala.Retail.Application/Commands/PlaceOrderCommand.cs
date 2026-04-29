@@ -73,7 +73,7 @@ public class PlaceOrderCommandHandler(
             var coupons = await couponRead.FindAsync(c => c.Code == request.CouponCode.ToUpperInvariant() && c.IsActive, ct);
             var coupon = coupons.FirstOrDefault();
 
-            if (coupon != null && coupon.ExpiresAt > DateTime.UtcNow && coupon.UsedCount < coupon.MaxUsage && totalAmount >= coupon.MinOrderAmount)
+            if (coupon != null && coupon.ExpiresAt > DateTime.UtcNow && totalAmount >= coupon.MinOrderAmount)
             {
                 discountAmount = coupon.DiscountType == DiscountType.Percentage
                     ? Math.Round(totalAmount * coupon.DiscountValue / 100, 2)

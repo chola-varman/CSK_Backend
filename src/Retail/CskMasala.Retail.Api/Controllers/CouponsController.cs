@@ -22,7 +22,7 @@ public class CouponsController(ICouponService couponService, IExecutionContext c
     {
         if (ctx.Role != UserRole.Admin) return Forbid();
         var id = await couponService.CreateCouponAsync(request.Code, request.DiscountType, request.DiscountValue,
-            request.MinOrderAmount, request.MaxUsage, request.ExpiresAt, ct);
+            request.MinOrderAmount, request.ExpiresAt, ct);
         return Ok(new { id });
     }
 }
@@ -32,5 +32,4 @@ public record CreateCouponRequest(
     DiscountType DiscountType,
     decimal DiscountValue,
     decimal MinOrderAmount,
-    int MaxUsage,
     DateTime ExpiresAt);

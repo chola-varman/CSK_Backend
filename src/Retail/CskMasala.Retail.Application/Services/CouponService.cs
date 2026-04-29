@@ -19,9 +19,6 @@ public class CouponService(
         if (coupon.ExpiresAt < DateTime.UtcNow)
             return new CouponValidationDto(false, 0, "Coupon has expired");
 
-        if (coupon.UsedCount >= coupon.MaxUsage)
-            return new CouponValidationDto(false, 0, "Coupon usage limit reached");
-
         if (orderAmount < coupon.MinOrderAmount)
             return new CouponValidationDto(false, 0, $"Minimum order amount is ₹{coupon.MinOrderAmount}");
 
@@ -33,7 +30,7 @@ public class CouponService(
     }
 
     public async Task<Guid> CreateCouponAsync(string code, DiscountType discountType, decimal discountValue,
-        decimal minOrderAmount, int maxUsage, DateTime expiresAt, CancellationToken ct = default)
+        decimal minOrderAmount, DateTime expiresAt, CancellationToken ct = default)
     {
         var coupon = new Coupon
         {
@@ -41,7 +38,6 @@ public class CouponService(
             DiscountType = discountType,
             DiscountValue = discountValue,
             MinOrderAmount = minOrderAmount,
-            MaxUsage = maxUsage,
             ExpiresAt = expiresAt
         };
         await couponWrite.AddAsync(coupon, ct);
