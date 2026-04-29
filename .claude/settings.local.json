@@ -7,7 +7,9 @@
       "Bash(mv 'c:/Users/chola/OneDrive/MY WORK/PROJECTS/CSK MASALA/Backend/CSK_Backend/src/CskMasala.Shared/*' 'c:/Users/chola/OneDrive/MY WORK/PROJECTS/CSK MASALA/Backend/CSK_Backend/src/Shared/')",
       "Bash(mv '__TRACKED_VAR__/CskMasala.Api/*' __TRACKED_VAR__/Api/)",
       "Bash(xargs rm *)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "PowerShell(cd \"c:\\\\Users\\\\chola\\\\OneDrive\\\\MY WORK\\\\PROJECTS\\\\CSK MASALA\\\\Backend\\\\CSK_Backend\\\\src\\\\Api\"; dotnet user-secrets set \"FIREBASE_SERVICE_ACCOUNT_JSON\" \\(Get-Content \"..\\\\..\\\\firebase-temp.json\" -Raw\\))",
+      "PowerShell($secretsPath = \"$env:APPDATA\\\\Microsoft\\\\UserSecrets\\\\0dfb1302-ae73-44e4-9e34-dbe707609aac\\\\secrets.json\"; if \\(Test-Path $secretsPath\\) { Get-Content $secretsPath } else { \"File does not exist yet\" })"
     ]
   }
 }

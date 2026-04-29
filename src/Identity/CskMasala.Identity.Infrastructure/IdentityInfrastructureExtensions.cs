@@ -33,21 +33,15 @@ public static class IdentityInfrastructureExtensions
     {
         if (FirebaseApp.DefaultInstance != null) return;
 
-        var json = config["FIREBASE_SERVICE_ACCOUNT_JSON"];
-        if (!string.IsNullOrWhiteSpace(json))
+        var keyPath = config["FIREBASE_SERVICE_ACCOUNT_PATH"];
+        if (string.IsNullOrWhiteSpace(keyPath) || !File.Exists(keyPath))
+            return;
+
+        var json = File.ReadAllText(keyPath);
+        FirebaseApp.Create(new AppOptions
         {
-            FirebaseApp.Create(new AppOptions
-            {
-                Credential = GoogleCredential.FromJson(json),
-                ProjectId = config["FIREBASE_PROJECT_ID"]
-            });
-        }
-        else
-        {
-            FirebaseApp.Create(new AppOptions
-            {
-                ProjectId = config["FIREBASE_PROJECT_ID"] ?? "demo-project"
-            });
-        }
+            Credential = GoogleCredential.FromJson(json),
+            ProjectId = config["FIREBASE_PROJECT_ID"]
+        });
     }
 }
